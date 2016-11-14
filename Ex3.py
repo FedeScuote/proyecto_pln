@@ -1,12 +1,19 @@
+import os
 from collections import Counter
 import nltk
+from os import walk
+
+from nltk.corpus import PlaintextCorpusReader
+
 from Ex1 import tokenize, count_words
 
+corpusdir = 'corpus/'
 
-class textVector():
-    def __init__(self, text_name):
-        self.text_name = text_name
-        self.vectors = build_vectors(text_name)
+
+class TextVector:
+    def __init__(self, file_id):
+        self.file_id = file_id
+        self.vectors = build_vectors(file_id)
 
 
 def build_vectors(text):
@@ -28,3 +35,22 @@ def build_vectors(text):
     for key, value in dictionary.items():
         dictionary[key] = value / amount_of_words
     return dictionary
+
+
+class TextCollection:
+    def __init__(self):
+        # Create a Corpus with all the data
+        self.corpus = PlaintextCorpusReader(corpusdir, '.*/*')
+        # Create the vectorial Space, creating each Vector
+        self.vectors = []
+        for document in self.corpus.fileids():
+            self.vectors.append(TextVector(document))
+
+
+def main():
+    text_collection = TextCollection()
+    while True:
+        text_name = input("Insert a Query")
+
+
+main()
