@@ -5,7 +5,6 @@ import nltk
 from collections import Counter
 
 
-
 def tokenize(text_name):
     """
     1)

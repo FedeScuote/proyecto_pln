@@ -1,11 +1,8 @@
-import os
 from collections import Counter
 import nltk
-from os import walk
-
 from nltk.corpus import PlaintextCorpusReader
+from Ex2 import preprocess, stem
 
-from Ex1 import tokenize, count_words
 
 corpusdir = 'corpus/'
 
@@ -13,7 +10,7 @@ corpusdir = 'corpus/'
 class TextVector:
     def __init__(self, file_id):
         self.file_id = file_id
-        self.vectors = build_vectors(file_id)
+        self.words = build_vectors(corpusdir + file_id)
 
 
 def build_vectors(text):
@@ -39,18 +36,31 @@ def build_vectors(text):
 
 class TextCollection:
     def __init__(self):
-        # Create a Corpus with all the data
-        self.corpus = PlaintextCorpusReader(corpusdir, '.*/*')
+        # Create a Corpus with all the data preprocessed with exercise 2 tokenizer
+        self.corpus = PlaintextCorpusReader(corpusdir, '.*/*', word_tokenizer=preprocess)
         # Create the vectorial Space, creating each Vector
-        self.vectors = []
+        self.Text_vectors = []
         for document in self.corpus.fileids():
-            self.vectors.append(TextVector(document))
+            self.Text_vectors.append(TextVector(document))
+
+
+def search_word_in_vector(text_collection, word):
+    document_match = []
+    stemmed_word = stem([word])[0]
+    for Text_vector in text_collection.Text_vectors:
+        if stemmed_word in Text_vector.words:
+            document_match.append(Text_vector)
+    return sorted(document_match, key=lambda document: document.words.get(stemmed_word))
 
 
 def main():
     text_collection = TextCollection()
     while True:
-        text_name = input("Insert a Query")
+        query = input("Insert a word: \n")
+        print("The recommended documents are (sorted by relevance): \n")
+        for document in search_word_in_vector(text_collection, query):
+            print(document.file_id)
+        print('\n')
 
 
 main()
