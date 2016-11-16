@@ -14,6 +14,9 @@ class TextVector:
 
 
 def build_vectors(text):
+
+    # Usar ITF IDF para descartar las palabras comunes.
+
     """
     Method that receives a text and returns the dict with the words and count of each word.
     :param text: url of the text
