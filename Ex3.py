@@ -2,9 +2,9 @@ from collections import Counter
 import nltk
 from nltk.corpus import PlaintextCorpusReader
 from Ex2 import preprocess, stem
+from math import log
 
-
-corpusdir = 'corpus/'
+corpusdir = 'corpus/corpus-gutenberg/'
 
 
 class TextVector:
@@ -14,9 +14,6 @@ class TextVector:
 
 
 def build_vectors(text):
-
-    # Usar ITF IDF para descartar las palabras comunes.
-
     """
     Method that receives a text and returns the dict with the words and count of each word.
     :param text: url of the text
@@ -53,7 +50,14 @@ def search_word_in_vector(text_collection, word):
     for Text_vector in text_collection.Text_vectors:
         if stemmed_word in Text_vector.words:
             document_match.append(Text_vector)
-    return sorted(document_match, key=lambda document: document.words.get(stemmed_word))
+    idf = log(len(text_collection.Text_vectors) / len(document_match))
+    # Remove words with weight 0
+    for Text_vector in text_collection.Text_vectors:
+        if stemmed_word in Text_vector.words:
+            if(Text_vector.words.get(stemmed_word) * idf) == 0:
+                document_match.remove(Text_vector)
+    # Automatically returns de tf_idf weight
+    return sorted(document_match, key=lambda document: (document.words.get(stemmed_word) * idf))
 
 
 def main():
