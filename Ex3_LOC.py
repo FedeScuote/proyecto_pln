@@ -31,6 +31,12 @@ def build_vectors(text):
     # Creates the vector size
     for key, value in dictionary.items():
         dictionary[key] = value / amount_of_words
+    # Adds Most common bigrams
+    bigrams = nltk.bigrams(tokens)
+    fdist_bigrams = nltk.FreqDist(bigrams)
+    for best_bigram in fdist_bigrams.most_common():
+        dictionary[best_bigram] = fdist_bigrams[best_bigram]
+
     return dictionary
 
 
@@ -56,7 +62,7 @@ def search_word_in_vector(text_collection, word):
         # Remove words with weight 0
         for Text_vector in text_collection.Text_vectors:
             if stemmed_word in Text_vector.words:
-                if (Text_vector.words.get(stemmed_word) * idf) == 0:
+                if(Text_vector.words.get(stemmed_word) * idf) == 0:
                     document_match.remove(Text_vector)
         # Automatically returns de tf_idf weight
         return sorted(document_match, key=lambda document: (document.words.get(stemmed_word) * idf))
